@@ -1,6 +1,6 @@
 val scala3Version = "3.6.1"
 
-lazy val zioVersion     = "2.1.11"
+lazy val zioVersion     = "2.1.13"
 lazy val refinedVersion = "0.11.2"
 
 lazy val root = project
@@ -39,5 +39,10 @@ lazy val root = project
         "com.lihaoyi"    % "requests_3"  % "0.9.0",
         "org.typelevel" %% "cats-core"   % "2.12.0",
         "dev.zio"       %% "zio-prelude" % "1.0.0-RC35"
-      )
+      ) ++ Seq(
+        "dev.zio" %% "zio-config",
+        "dev.zio" %% "zio-config-magnolia",
+        "dev.zio" %% "zio-config-typesafe",
+        "dev.zio" %% "zio-config-refined"
+      ).map(_ % "4.0.2")
   )

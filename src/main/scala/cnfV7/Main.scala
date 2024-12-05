@@ -8,6 +8,8 @@ import eu.timepit.refined.numeric.*
 import eu.timepit.refined.predicates.all.{Contains, Not}
 import eu.timepit.refined.string.*
 
+import scala.util.Try
+
 type ValidPort        = Greater[1000] And LessEqual[2999]
 type Port             = Int Refined ValidPort
 type ValidEndpointUrl = Url And StartsWith["https://"]
@@ -22,7 +24,10 @@ import ConfigError.*
 
 object Config:
   private def readPort(raw: String): Validation[InvalidPort, Port] =
-    Validation.fromEither(refineV[ValidPort](raw.toInt)).mapError(InvalidPort.apply)
+    Try(raw.toInt).toEither.fold(
+      error => Validation.fail(InvalidPort(s"Invalid port: '$raw' - $error")),
+      port => Validation.fromEither(refineV[ValidPort](port)).mapError(InvalidPort.apply)
+    )
 
   private def readURL(raw: String): Validation[BrokenURL, EndpointUrl] =
     Validation.fromEither(refineV[ValidEndpointUrl](raw)).mapError(BrokenURL(raw))
